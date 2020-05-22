@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rt.koko.mapper.DocumentMapper">
+
+	<!-- 목록(List) -->
+	<select id="documentList" resultType="rt.koko.domain.DocumentVO">
+		<!-- SELECT * FROM document ORDER BY doc_seq desc -->
+		SELECT d.doc_seq, d.doc_title, m.m_name, c.c_name, d.m_id, d.doc_regdate
+			FROM member m, company c, document d
+			WHERE m.m_companyno = c.m_companyno
+			AND d.m_id = m.m_id
+			ORDER BY doc_seq desc
+	</select>
+	
+	<!-- 입력(Insert) -->
+	<insert id="documentInsert">
+		INSERT INTO document (doc_seq, doc_title, doc_content, doc_regdate, m_id)
+		VALUES (doc_seq.nextval, #{doc_title}, #{doc_content}, SYSDATE, #{m_id})
+	</insert>
+	
+	<!-- 입력(Insert) : 생성된 pk값을 알아야될 때 -->
+	<insert id="documentInsertSelectKey">
+		<selectKey keyProperty="doc_seq" order="BEFORE" resultType="long">
+			SELECT doc_seq.nextval FROM dual
+		</selectKey>
+		INSERT INTO document (doc_seq, doc_title, doc_content, doc_regdate, m_id)
+		VALUES (#{doc_seq}, #{doc_title}, #{doc_content}, SYSDATE, #{m_id})
+	</insert>
+	
+	<!-- 게시글보기(Detail)  -->
+	<select id="documentDetail" resultType="rt.koko.domain.DocumentVO">
+		SELECT * FROM document WHERE doc_seq = #{doc_seq}
+	</select>
+	
+	<!-- 삭제(Delete) -->
+	<delete id="documentDelete">
+		DELETE FROM document WHERE doc_seq = #{doc_seq}
+	</delete>
+	
+	<!-- 수정(Update)  -->
+	<update id="documentUpdate">
+		UPDATE document SET doc_title = #{doc_title}, doc_content = #{doc_content}, doc_regdate = SYSDATE
+			WHERE doc_seq = #{doc_seq}
+	</update>
+	
+	<!-- 페이징(documentListPaging) -->
+	<select id="documentListPaging" resultType="rt.koko.domain.DocumentVO">
+		<![CDATA[
+			SELECT doc_seq, doc_title, doc_content, doc_regdate, m_id
+			FROM (SELECT /*+INDEX_DESC(document pk_document) */
+						rownum rn, doc_seq, doc_title, doc_content,  doc_regdate, m_id
+			FROM document
+			WHERE rownum <= #{pageNum} * #{amount})
+			WHERE rn > (#{pageNum} - 1) * #{amount}
+		]]>
+	</select>
+
+</mapper>

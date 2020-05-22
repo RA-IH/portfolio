@@ -1,0 +1,43 @@
+body {	
+	background-color: #f6f6f6;
+	font-family: Noto Sans KR;
+}
+
+h2 {
+	padding: 40px 10px;
+	border-bottom: 1px #eee solid;
+}
+
+.col-md-6 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 50%;
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+.list {
+	border: 1px #eee solid;
+	padding: 2.0rem 1.5rem;
+	cursor: pointer;
+	background-color: #fff;
+	/* transition: all 0.3s ease-in-out; */
+	margin: 2.5rem 0rem;
+}
+
+.list:hover {
+	opacity: 0.8;
+}
+
+li {
+	list-style: none;	
+}
+
+a {
+	text-decoration: none !important;
+}
+
+.container {
+	padding-top: 20px;
+	width: 1100px;
+	margin-left: 30rem;
+}

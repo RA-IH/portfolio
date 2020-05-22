@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 	private String p_no;
+	private String p_name;
+	private String p_regdate;
+	private String p_startDate;
+	private String p_endDate;
+	private String m_id; -->
+	
+<mapper namespace="rt.koko.mapper.TodoBoardMapper">
+	<cache />
+
+	<!-- 프로젝트 담당자 -->
+	<select id="projectGet" parameterType="String" resultType="rt.koko.domain.ProjectCommand">
+		select * from c_project
+		where p_no = #{p_no}
+	</select>
+		
+	<!-- 프로젝트별 게시글 불러오기 select -->
+	<select id="todoBoardListRead" parameterType="String"
+	        resultType="rt.koko.domain.TodoBoardCommand">
+		select /*+ INDEX_DESC(b todoBoard_pk) */
+		b.b_seq, b.m_id, b.bl_no,
+		b.b_title, b.b_contents, b.b_type,
+		b.b_scope, b.b_hitcount, b.b_regdate,
+		b.b_lastUpdate from TodoBoard b
+		where b.p_no = #{p_no}
+	</select>
+	
+	<!-- 글 타입별 게시글 불러오기 -->
+	<!-- <select id="todoBoardTypeSort" resultType="rt.koko.domain.TodoBoardCommand">
+		select /*+ INDEX_DESC(b todoBoard_pk) */
+		b.b_seq, b.m_id, b.bl_no,
+		b.b_title, b.b_contents, b.b_type,
+		b.b_scope, b.b_hitcount, b.b_regdate,
+		b.b_lastUpdate from TodoBoard b
+		where b.p_no = #{p_no}
+		and b.b_type = #{b_type}
+	</select> -->
+	
+	<select id="todoBoardTypeSort" resultType="rt.koko.domain.TodoBoardCommand">
+		<![CDATA[
+		select b_seq, m_id, bl_no,
+		b_title, b_contents, b_type,
+		b_scope, b_hitcount, b_regdate,
+		b_lastUpdate, p_no
+    	from
+			(select /*+ INDEX_DESC(todoBoard todoBoard_pk) */
+				rownum rn, b_seq, m_id, bl_no,
+				b_title, b_contents, b_type,
+				b_scope, b_hitcount, b_regdate,
+				b_lastUpdate, p_no from TodoBoard
+				where p_no = #{cri.p_no}
+				and b_type = #{b_type}
+				and rownum <= #{cri.pageNum} * #{cri.amount})
+    	where rn > (#{cri.pageNum} - 1) * #{cri.amount}
+	]]>
+	</select>
+	
+	
+	<!-- 타입별 글 갯수 -->
+	<select id="boardTypeCount" resultType="int">
+		select count(*) from todoBoard
+		where b_type = #{b_type}
+		and p_no = #{p_no}
+	</select>
+	
+	<!-- 게시글 페이징처리 불러오기 -->
+	<select id="getListWithPaging" resultType="rt.koko.domain.TodoBoardCommand">
+	<![CDATA[
+		select b_seq, m_id, bl_no,
+		b_title, b_contents, b_type,
+		b_scope, b_hitcount, b_regdate,
+		b_lastUpdate, p_no
+    	from
+			(select /*+ INDEX_DESC(todoBoard todoBoard_pk) */
+				rownum rn, b_seq, m_id, bl_no,
+				b_title, b_contents, b_type,
+				b_scope, b_hitcount, b_regdate,
+				b_lastUpdate, p_no from TodoBoard
+				where p_no = #{p_no}
+				and rownum <= #{pageNum} * #{amount})
+    	where rn > (#{pageNum} - 1) * #{amount}
+	]]>
+	</select>
+	
+	<select id="getTotalCount" resultType="int">
+		select count(*) from todoBoard
+		where p_no = #{p_no}
+	</select>
+	
+	<!-- 게시글 상세보기 detail -->
+	<select id="todoBoardDetail" parameterType="int" resultType="rt.koko.domain.TodoBoardCommand">
+		select * from TodoBoard
+		where b_seq = #{b_seq}
+	</select>
+	
+	<!-- 게시글 작성 insert -->
+	<insert id="todoBoardInsert" parameterType="rt.koko.domain.TodoBoardCommand">
+		insert into TodoBoard
+			values(board_seq.NEXTVAL, #{m_id}, 'bl003', #{b_title},
+					#{b_contents}, sysdate, #{b_type}, #{b_scope},
+					sysdate, 0, #{p_no})	
+	</insert>
+	
+	<!-- 게시글 작성 insertSelectKey -->
+	<insert id="todoBoardInsertSelectKey" parameterType="rt.koko.domain.TodoBoardCommand">
+		<selectKey keyProperty="b_seq" order="BEFORE"
+		resultType="int">
+			select board_seq.nextval from dual
+		</selectKey>
+		insert into TodoBoard
+			values(#{b_seq} , #{m_id}, 'bl003', #{b_title},
+					#{b_contents}, sysdate, #{b_type}, #{b_scope},
+					sysdate, 0, #{p_no})	
+	</insert>
+	
+	<!-- TodoBoard 삭제 (Delete) -->
+	<delete id="todoBoardDelete" parameterType = "int">
+		delete todoboard
+		where b_seq = #{b_seq}
+	</delete>
+	
+	<!-- TodoBoard 수정 (Update) -->
+	<update id="todoBoardUpdate" parameterType="rt.koko.domain.TodoBoardCommand">
+		update todoboard
+		set b_title = #{b_title},
+			b_contents = #{b_contents},		
+			b_lastUpdate = sysdate,
+			b_scope = #{b_scope},
+			b_type = #{b_type}
+		where b_seq = #{b_seq}
+		and m_id = #{m_id}		
+	</update>
+	
+</mapper>
+
+
+

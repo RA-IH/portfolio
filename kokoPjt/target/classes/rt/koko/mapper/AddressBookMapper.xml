@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rt.koko.mapper.AddressBookMapper">
+
+
+<!-- 조회 -->
+<select id="AddressBookList" resultType="rt.koko.domain.AddressBookVO">
+<![CDATA[
+SELECT * FROM ADDRESSBOOK
+order by ad_seq asc
+]]>
+</select>
+
+<!-- 연락처 등록 -->
+<insert id="AddressBookInsert">
+INSERT INTO ADDRESSBOOK <!-- (m_id, ad_seq, ad_name,ad_number,ad_email,ad_group,ad_company,ad_department,
+ad_address,ad_img,ad_memo,ad_regdate,ad_updatedate) -->
+VALUES (#{m_id}, ad_seq.nextval ,#{ad_name},#{ad_number},#{ad_email},#{ad_group},
+#{ad_company},#{ad_department},#{ad_address}, #{ad_memo}, SYSDATE, SYSDATE)
+</insert>
+
+
+<!-- 연락처 상세보기 -->
+<select id="AddressBookDetail" resultType="rt.koko.domain.AddressBookVO">
+SELECT * FROM ADDRESSBOOK 
+WHERE ad_seq = #{ad_seq}
+</select>
+
+<!--연락처 삭제  -->
+<delete id="AddressBookDelete">
+DELETE FROM ADDRESSBOOK
+WHERE ad_seq = #{ad_seq}
+</delete>
+
+<!--  연락처 수정 -->
+<update id="AddressBookUpdate">
+UPDATE ADDRESSBOOK SET
+
+ad_name = #{ad_name},
+ad_number = #{ad_number},
+ad_email = #{ad_email},
+ad_group = #{ad_group},
+ad_company = #{ad_company},
+ad_department = #{ad_department},
+ad_address = #{ad_address},
+ad_memo = #{ad_memo},
+ad_updatedate = SYSDATE
+
+WHERE ad_seq = #{ad_seq}
+</update>
+
+<select id="TotalCount" resultType="int">
+select count(*) from addressbook
+where ad_seq > 0
+</select>
+
+<select id="AddressBookListwithPaging" resultType="rt.koko.domain.AddressBookVO">
+<![CDATA[
+select m_id, ad_seq, ad_name,ad_number,ad_email,ad_group,ad_company,ad_department,
+ad_address,ad_memo,ad_regdate,ad_updatedate from
+(select /*+INDEX_ASC(addressbook pk_addressbook) */
+rownum rn, m_id, ad_seq, ad_name,ad_number,ad_email,ad_group,ad_company,ad_department,
+ad_address,ad_memo,ad_regdate,ad_updatedate
+from addressbook
+where rownum <= #{pageNum} * #{amount}
+)
+where rn > (#{pageNum} -1) * #{amount}
+]]>
+</select> 
+
+</mapper>

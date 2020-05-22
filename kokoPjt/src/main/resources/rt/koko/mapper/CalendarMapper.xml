@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rt.koko.mapper.CalendarMapper">
+	<select id="getList" resultType="rt.koko.domain.CalendarVO">
+		<![CDATA[
+		select*from CALENDAR where CA_SEQ > 0
+		]]>
+	</select>
+	
+	<insert id="insert">
+		insert into CALENDAR(CA_SEQ,CA_TITLE,CA_EXAM,CA_STARTDATE,CA_ENDDATE,CA_CATEGORY,CA_COLOR,M_ID)
+		value(ca_seq.nextval, #{CA_SEQ},#{CA_TITLE},#{CA_EXAM},#{CA_STARTDATE},#{CA_ENDDATE},#{CA_CATEGORY},#{CA_COLOR},#{M_ID})
+	</insert>
+	
+	<select id="read" resultType="rt.koko.domain.CalendarVO">
+		select * from CALENDAR where CA_SEQ = #{CA_SEQ}
+	</select>
+	
+	<delete id="delete">
+		delete from CALENDAR where CA_SEQ = #{CA_SEQ}
+	</delete>
+	
+	<update id="update">
+		update CALENDAR
+		set CA_TITLE = #{CA_TITLE},
+		CA_EXAM = #{CA_EXAM},
+		CA_STARTDATE = #{CA_STARTDATE},
+		CA_ENDDATE = #{CA_ENDDATE},
+		CA_CATEGORY = #{CA_CATEGORY},
+		CA_COLOR = #{CA_COLOR}
+		where CA_SEQ = #{CA_SEQ}
+	</update>
+
+
+
+</mapper>

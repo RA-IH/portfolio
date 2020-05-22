@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rt.koko.mapper.SurveyMapper">
+	<select id="selectOne" resultType="rt.koko.domain.SurveyCommand">
+		select * from survey
+		where s_seq = #{s_seq}
+	</select>
+	
+	<insert id="insertAnswer">
+		insert into answer
+		values(a_seq.nextval, #{s_seq}, #{ano})
+	</insert>
+	
+	<select id="selectList" resultType="rt.koko.domain.AnswerCommand">
+		select s_seq, ano, count(ano) s_ano,  
+		round(
+   			 (select count(*) from answer 
+   				 where s_seq = a.s_seq and ano = a.ano) *100.0 
+    			/ (select count(*) from answer    
+        		where s_seq = a.s_seq),1) rate       
+		from answer a 
+		where s_seq = #{s_seq}
+		group by s_seq, ano 
+		<!-- order by ano -->
+	</select>
+	
+	<insert id="insertSurvey">
+		insert into survey (s_seq, question, ans1, ans2, ans3, ans4, s_regdate, expire_date, m_id)
+		values (s_seq.nextval, #{question}, #{ans1}, #{ans2}, #{ans3}, #{ans4}, sysdate, #{expire_date}, #{m_id})
+	</insert>
+	
+ 	<select id="getList" resultType="rt.koko.domain.SurveyCommand">
+		select * from survey where s_seq > 0
+	</select>
+	
+	<delete id="delete">
+		delete from survey
+		where s_seq = #{s_seq}
+	</delete>
+	
+	<update id="update">
+		update survey
+		set question = #{question},
+		ans1 = #{ans1},
+		ans2 = #{ans2},
+		ans3 = #{ans3},
+		ans4 = #{ans4},
+		s_regdate = sysdate,
+		expire_date = #{expire_date},
+		m_id = #{m_id}
+		where s_seq = #{s_seq}
+	</update>
+	
+	<select id="listAll" resultType="rt.koko.domain.SurveyCommand" parameterType="rt.koko.domain.SCriteria">
+		select * from survey 
+		where s_seq > 0
+		order by s_seq asc
+		<include refid="search"></include>
+	</select>
+	
+	<select id="countArticle" parameterType="rt.koko.domain.SCriteria" resultType="int">
+		select count(*) from survey 
+		where s_seq > 0
+		<include refid="search"></include>
+	</select>
+	
+	<sql id="search">
+		<if test="searchType != null">	
+			<if test="searchType == 'q'.toString()">AND QUESTION LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'm'.toString()">AND M_ID LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'qm'.toString()">AND (QUESTION LIKE '%' || #{keyword} || '%') or (M_ID LIKE '%' || #{keyword} || '%')</if>
+		</if>
+	</sql>
+</mapper>

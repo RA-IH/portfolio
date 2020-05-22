@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rt.koko.mapper.AuthorityMapper">
+
+<!-- 글 작성 권한 -->
+<select id="boardAuthorityRead" resultType="rt.koko.domain.AuthorityCommand">
+	select m_id, p_no, a_board, a_admin from authority
+	where m_id = #{m_id}
+	and p_no = #{p_no}
+</select>
+
+<!-- 관리자 권한 -->
+<select id="adminAuthorityRead" resultType="String">
+	select a_admin from authority
+	where m_id = #{m_id}
+	and p_no = #{p_no}
+</select>
+
+<!-- 회원의 권한 업데이트 -->
+
+</mapper>

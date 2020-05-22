@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rt.koko.mapper.TodoReplyMapper">
+	
+	<!-- 댓글 등록 -->
+	<insert id="todoReplyInsert">
+		insert into todoReply
+		values (reply_seq.NEXTVAL, #{br_contents}, sysdate, sysdate, #{b_seq}, #{m_id})
+	</insert>
+	
+	<!-- 댓글 조회 -->
+	<select id="todoReplyRead" resultType="rt.koko.domain.TodoReplyCommand">
+		select * from todoReply
+		where br_seq = #{br_seq}
+	</select>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="TodoReplyDelete">
+		delete todoReply
+		where br_seq = #{br_seq}
+	</delete>
+	
+	<!-- 댓글 수정 -->
+	<update id="TodoReplyUpdate">
+		update todoReply
+		set br_contents = #{br_contents},
+		br_lastUpdate = sysdate
+		where br_seq = #{br_seq}
+	</update>
+	
+	<!-- 댓글 리스트 조회 -->
+	<select id="getListWithPaging" resultType="rt.koko.domain.TodoReplyCommand">
+		<![CDATA[
+			select br_seq, br_contents, br_regdate, br_lastUpdate, b_seq, m_id
+			from
+				(
+				 select /*+INDEX_DESC(todoReply todoReply_PK)*/
+				  rownum rn, br_seq, br_contents, br_regdate, br_lastUpdate, b_seq, m_id
+				  from todoReply
+				  where b_seq = #{b_seq}
+				  and rownum <= #{cri.pageNum} * #{cri.amount}
+				) where rn > (#{cri.pageNum} -1) * #{cri.amount}
+		]]>
+	</select>
+	
+	<!-- 글별 댓글 총 개수 -->
+	<select id="getReplyCount" resultType="int">
+		select count(br_seq) from todoReply
+		where b_seq = #{b_seq}
+	</select>
+</mapper>

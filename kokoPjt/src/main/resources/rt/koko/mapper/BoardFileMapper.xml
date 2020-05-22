@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rt.koko.mapper.BoardFileMapper">
+	<!-- 파일 첨부 등록 -->
+	<insert id="boardFileInsert">
+		insert into boardFile (bf_uuid, bf_name, bf_type, bf_uploadPath, b_seq)
+		values (#{bf_uuid}, #{bf_name}, #{bf_type}, #{bf_uploadPath}, #{b_seq})
+	</insert>
+	
+	<!-- 파일 삭제 -->
+	<delete id="boardFileDelete">
+		delete from boardFile
+		where bf_uuid = #{bf_uuid}
+	</delete>
+	
+	<!-- 파일 전체 삭제 -->
+	<delete id="boardFileDeleteAll">
+		delete from boardFile
+		where b_seq = #{b_seq}
+	</delete>
+	
+	<!-- 글별 첨부된 파일 리스트 -->
+	<select id="fileList" resultType="rt.koko.domain.BoardFileCommand">
+		select * from boardFile
+		where b_seq = #{b_seq}
+	</select>
+</mapper>
