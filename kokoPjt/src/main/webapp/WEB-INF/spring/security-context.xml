@@ -20,7 +20,7 @@
 			invalidate-session="true" />
 			
 		<security:access-denied-handler error-page="/"/>
-		<security:csrf disabled="true"/>
+		<security:csrf disabled="false"/>
 
 </security:http>
 
