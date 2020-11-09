@@ -4,7 +4,6 @@
 	xmlns:security="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
  
 <bean id="customLoginSuccess" class="rt.koko.security.CustomLoginSuccessHandler"></bean>
 <bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
@@ -24,22 +23,6 @@
 		<security:csrf disabled="true"/>
 
 </security:http>
-
-
-	<!-- <security:authentication-manager> <security:authentication-provider> 
-		<security:user-service> <security:user name="member" password="{noop}member" 
-		authorities="ROLE_MEMBER"/> <security:user name="admin" password="{noop}admin" 
-		authorities="ROLE_MEMBER, ROLE_ADMIN"/> </security:user-service> </security:authentication-provider> 
-		</security:authentication-manager> -->
-
-	<!-- <security:authentication-manager> <security:authentication-provider> 
-		<security:jdbc-user-service data-source-ref="dataSource" /> <security:jdbc-user-service 
-		data-source-ref="dataSource" users-by-username-query="select userid , userpw 
-		, enabled from tbl_member where userid = ? " authorities-by-username-query="select 
-		userid, auth from tbl_member_auth where userid = ? " /> <security:password-encoder 
-		ref="customPasswordEncoder" /> <security:password-encoder ref="bcryptPasswordEncoder" 
-		/> </security:authentication-provider> </security:authentication-manager> -->
-
 
 	<security:authentication-manager>
 
